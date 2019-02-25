@@ -1,0 +1,91 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define SIZEMAP 6
+
+int convertCharToInt(char num){     // conversão de char para inteiro
+  return (num -48);
+}
+
+int main(void){
+  int **mapa = malloc(sizeof(int*)*SIZEMAP);
+  for (int i=0; i<SIZEMAP; i++){
+    mapa[i] = malloc(sizeof(int)*SIZEMAP);    // formação do estacionamento
+    for (int j=0; j<SIZEMAP; j++)             // atraves de uma matriz
+      mapa[i][j] = 0;
+  }
+
+  struct automovel {
+    char id, tamanho, direcao;    // estrutura que especifíca cada veiculo
+    int x, y;
+  }; typedef struct automovel Auto;
+
+  FILE *config;
+  config = fopen("entrada.txt", "r");
+
+  int qtdVeiculos = 0;
+  while (!feof(config))
+    if (fgetc(config) == '\n')    // calcula a quantidade de veiculos
+      qtdVeiculos++;              // por meio da quantidade de '\n'
+
+  Auto *veiculo = malloc(sizeof(Auto)*qtdVeiculos);  // aloca memoria para cada veiculo
+
+  rewind(config);    // seta o ponteiro do arquivo para o inicio do mesmo
+  char c;
+  for (int i=0; i<=qtdVeiculos; i++){
+    for(int j=0; (c = fgetc(config)) != '\n'; j++){
+      if (j==0)
+        veiculo[i].id = c;
+      else if (j==2)
+        veiculo[i].tamanho = c;     // atribuições das caracteristicas de cada
+      else if (j==4)                // automovel na struct
+        veiculo[i].direcao = c;
+      else if (j==7)
+        veiculo[i].x = convertCharToInt(c);
+      else if (j==9)
+        veiculo[i].y = convertCharToInt(c);
+      else if (c == EOF)
+        break;
+    }
+  }
+  fclose(config);
+
+  for(int i=0; i<=qtdVeiculos; i++){
+    
+    if (veiculo[i].tamanho == '2' && veiculo[i].direcao == 'X'){
+      printf("%d %d\n",veiculo[i].x,veiculo[i].y);
+      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;
+      mapa[veiculo[i].y-1][veiculo[i].x] = 1;
+    }
+    else if (veiculo[i].tamanho == '2' && veiculo[i].direcao == 'Y'){
+      printf("%d %d\n",veiculo[i].x,veiculo[i].y);
+      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;
+      mapa[veiculo[i].y][veiculo[i].x-1] = 1;   // configuração inicial do mapa
+                                                // ja com os veiculos
+    }
+    else if (veiculo[i].tamanho == '3' && veiculo[i].direcao == 'X'){
+      printf("%d %d\n",veiculo[i].x,veiculo[i].y);
+      mapa[veiculo[i].y-1][veiculo[i].x-1] = 2;
+      mapa[veiculo[i].y-1][veiculo[i].x] = 2;     // 1 para carro
+      mapa[veiculo[i].y-1][veiculo[i].x+1] = 2;   // 2 para caminhão
+
+    }
+    else if (veiculo[i].tamanho == '3' && veiculo[i].direcao == 'Y'){
+      printf("%d %d\n",veiculo[i].x,veiculo[i].y);
+      mapa[veiculo[i].y-1][veiculo[i].x-1] = 2;
+      mapa[veiculo[i].y][veiculo[i].x-1] = 2;
+      mapa[veiculo[i].y+1][veiculo[i].x-1] = 2;
+
+    }
+  }
+  for (int i=SIZEMAP-1; i>=0; i--){
+    for (int j=0; j<SIZEMAP; j++){
+      printf("%d ", mapa[i][j]);
+    }
+    printf("\n");
+  }
+
+  // FILE *manobras;
+  // manobras = fopen("manobras.txt", "r");
+
+}
