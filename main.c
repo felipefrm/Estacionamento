@@ -12,6 +12,7 @@ int main(int argc, char *argv[]){
   Auto *veiculo = leituraConfigInicial(arq->veiculos);
   configInicialMapa(qtdVeiculos, veiculo, mapa);
   leituraExecucaoManobra(veiculo, mapa, arq->manobras);
+  verificaSaidaZ(veiculo, qtdVeiculos);
   free(arq);
   imprimeMapa(mapa);
 }
