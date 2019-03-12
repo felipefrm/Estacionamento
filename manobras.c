@@ -5,11 +5,18 @@
 #include "manobras.h"
 #include "entradaSaida.h"
 
-void contaTempo(double *utime, double *stime){
+void contaTempoProcessador(double *utime, double *stime){
   struct rusage resources;
   getrusage(RUSAGE_SELF, &resources);
   *utime = (double) resources.ru_utime.tv_sec + 1.e-6 * (double) resources.ru_utime.tv_usec;
   *stime = (double) resources.ru_stime.tv_sec + 1.e-6 * (double) resources.ru_stime.tv_usec;
+}
+
+struct timeval contaTempoRelogio(){
+  struct timeval tempo;
+  gettimeofday(&tempo, NULL);
+  return tempo;
+  // return (double)(tempo.tv_sec+(tempo.tv_usec/1000000));
 }
 
 void apagaPosAnterior(Auto veiculo, int **mapa){
@@ -61,7 +68,7 @@ int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra, int id){
 int realizaManobra(int qtdVeiculos, Auto *veiculo, Movimento manobra, int **mapa){
   printf("\n");
   char flag = 0;
-  for (int i=0; i<=qtdVeiculos; i++){
+  for (int i=0; i<qtdVeiculos; i++){
     printf("%c e %c\n", veiculo[i].id, manobra.id);
     if (veiculo[i].id == manobra.id){
       flag = 1;
