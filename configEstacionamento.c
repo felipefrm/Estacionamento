@@ -14,7 +14,7 @@ int** criaMapa(){
 }
 
 void configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
-  for(int i=0; i<=qtdVeiculos; i++){
+  for(int i=0; i<qtdVeiculos; i++){
 
     if (veiculo[i].direcao == 'X'){
       printf("%d %d\n",veiculo[i].x,veiculo[i].y);
@@ -30,14 +30,5 @@ void configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
       if (veiculo[i].tamanho == '3')
         mapa[veiculo[i].y+1][veiculo[i].x-1] = 1;
     }
-  }
-}
-
-void imprimeMapa(int **mapa){
-  for (int i=SIZEMAP-1; i>=0; i--){
-    for (int j=0; j<SIZEMAP; j++){
-      printf("%d ", mapa[i][j]);
-    }
-    printf("\n");
   }
 }
