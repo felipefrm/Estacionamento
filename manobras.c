@@ -5,6 +5,30 @@
 #include "manobras.h"
 #include "entradaSaida.h"
 
+void verificaSaidaZ(Auto *veiculo, int qtdVeiculos){
+  for (int i=0; i<qtdVeiculos; i++){
+    if (veiculo[i].id == 'Z'){
+      printf("X: %d e Y: %d\n", veiculo[i].x, veiculo[i].y);
+      if (veiculo[i].direcao == 'X' && veiculo[i].tamanho == '2'){
+        if((veiculo[i].x == 6 || veiculo[i].x == 5) && veiculo[i].y == 4)
+          printf("Chegou no destino!\n");
+      }
+      else if (veiculo[i].direcao == 'X' && veiculo[i].tamanho == '3'){
+        if((veiculo[i].x == 6 || veiculo[i].x == 5 || veiculo[i].x == 4) && veiculo[i].y == 4)
+          printf("Chegou no destino!\n");
+      }
+      else if (veiculo[i].direcao == 'Y' && veiculo[i].tamanho == '2'){
+        if((veiculo[i].y == 3 || veiculo[i].y == 4) && veiculo[i].x == 6)
+          printf("Chegou no destino!\n");
+      }
+      else if (veiculo[i].direcao == 'Y' && veiculo[i].tamanho == '3'){
+        if((veiculo[i].y == 2 || veiculo[i].y == 3 || veiculo[i].y == 4) && veiculo[i].x == 6)
+          printf("Chegou no destino!\n");
+      }
+    }
+  }
+}
+
 void contaTempoProcessador(double *utime, double *stime){
   struct rusage resources;
   getrusage(RUSAGE_SELF, &resources);
@@ -16,7 +40,6 @@ struct timeval contaTempoRelogio(){
   struct timeval tempo;
   gettimeofday(&tempo, NULL);
   return tempo;
-  // return (double)(tempo.tv_sec+(tempo.tv_usec/1000000));
 }
 
 void apagaPosAnterior(Auto veiculo, int **mapa){
@@ -43,7 +66,7 @@ int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra, int id){
     veiculo[id].y += manobra.amplitude;
 
   if (veiculo[id].direcao == 'Y'){
-    for (int i = veiculo[id].y-1; i < veiculo[id].y-1+convertCharToInt(veiculo[id].tamanho);i++){
+    for (int i = veiculo[id].y-1; i < veiculo[id].y-1+convertCharToInt(veiculo[id].tamanho); i++){
       if (mapa[i][veiculo[id].x-1]!= 0){
         printf("Caralho teve uma batida alí, eita porra!\n");        //verifica se a posição do veiculo
         return 0;                                     //depois da manobra está livre
@@ -53,7 +76,7 @@ int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra, int id){
     }
   }
   else if (veiculo[id].direcao == 'X'){
-    for (int i = veiculo[id].x-1; i < veiculo[id].x-1+convertCharToInt(veiculo[id].tamanho);i++){
+    for (int i = veiculo[id].x-1; i < veiculo[id].x-1+convertCharToInt(veiculo[id].tamanho); i++){
       if (mapa[veiculo[id].y-1][i]!= 0){
         printf("Caralho teve uma batida alí, eita porra!\n");
         return 0;
