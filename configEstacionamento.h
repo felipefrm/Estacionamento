@@ -6,6 +6,5 @@
 
 int** criaMapa();
 void configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa);
-void imprimeMapa(int **mapa);
 
 #endif
