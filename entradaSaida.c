@@ -112,7 +112,6 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
   struct timeval clocktime_ant, clocktime_pos;
   clocktime_ant = contaTempoRelogio();
   contaTempoProcessador(&utime_ant, &stime_ant); //marca tempo inicial
-  printf("%f\n", clocktime_ant);
   while(!feof(arq_manobras))
     if(!realizaManobra(qtdVeiculos, veiculo, leituraManobra(arq_manobras), mapa)){
       clocktime_pos = contaTempoRelogio();
@@ -120,7 +119,7 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
       printf("Tempo de usuário: %fs + Tempo de sistema: %fs = %f.\n", utime_pos-utime_ant, stime_pos-stime_ant, (utime_pos-utime_ant) + (stime_pos-stime_ant));
       printf("Tempo de relogio: %fs\n", ((double)(clocktime_pos.tv_sec-clocktime_ant.tv_sec))
        + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
-      printf("Manobra impossível.\n");
+      printf("Manobra inviável.\n");
       fclose(arq_manobras);
       return 0;
     }
@@ -134,6 +133,7 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
 }
 
 void imprimeMapa(int **mapa){
+  printf("MAPA DO ESTACIONAMENTO:\n");
   for (int i=SIZEMAP-1; i>=0; i--){
     for (int j=0; j<SIZEMAP; j++){
       printf("%d ", mapa[i][j]);
