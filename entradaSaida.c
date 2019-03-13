@@ -50,14 +50,17 @@ int convertCharToInt(char num){     // conversão de char para inteiro
 }
 
 void setVeiculo(int qtdVeiculos, FILE *arq, Auto *veiculo){
-  printf("QTD: %d\n", qtdVeiculos);
+  // printf("QTD: %d\n", qtdVeiculos);
   char c;
   for (int i=0; i<qtdVeiculos; i++){
     for(int j=0; (c = fgetc(arq)) != '\n' && !feof(arq); j++){
-      if (j==0)
+      if (j==0){
+
         veiculo[i].id = c;
+        // printf("ID:%c\n",veiculo[i].id);
+      }
       else if (j==2)
-        veiculo[i].tamanho = c;     // atribuições das caracteristicas de cada
+        veiculo[i].tamanho = convertCharToInt(c);     // atribuições das caracteristicas de cada
       else if (j==4)                // automovel na struct
         veiculo[i].direcao = c;
       else if (j==7)
@@ -99,10 +102,10 @@ Movimento leituraManobra(FILE *arq_manobra){
     else if ((i == 4 && c != '+' && c != '-') || i == 5)
       manobra.amplitude = verificaSinal(manobra.sinal, convertCharToInt(c));
   }
-  printf("ID: %c\n", manobra.id);
-  printf("DIRECAO: %c\n", manobra.direcao);
-  printf("SINAL: %c\n", manobra.sinal);
-  printf("AMPLITUDE: %d\n", manobra.amplitude);
+  // printf("ID: %c\n", manobra.id);
+  // printf("DIRECAO: %c\n", manobra.direcao);
+  // printf("SINAL: %c\n", manobra.sinal);
+  // printf("AMPLITUDE: %d\n", manobra.amplitude);
   fscanf(arq_manobra, "\n");
   return manobra;
 }
@@ -121,6 +124,7 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
        + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
       printf("Manobra inviável.\n");
       fclose(arq_manobras);
+      free(veiculo);
       return 0;
     }
     clocktime_pos = contaTempoRelogio();
@@ -128,8 +132,13 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
   printf("Tempo de usuário: %fs + Tempo de sistema: %fs = %f.\n", utime_pos-utime_ant, stime_pos-stime_ant, (utime_pos-utime_ant) + (stime_pos-stime_ant));
   printf("Tempo de relogio: %fs\n", ((double)(clocktime_pos.tv_sec-clocktime_ant.tv_sec))
    + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
+  if(!verificaSaidaZ(veiculo, qtdVeiculos)){
+    printf("O veículo Z não chegou até à saída.\n");
+    return 0;
+  }
+  printf("O veículo Z chegou até à saída.\n");
   fclose(arq_manobras);
-  free(veiculo);
+  return 1;
 }
 
 void imprimeMapa(int **mapa){

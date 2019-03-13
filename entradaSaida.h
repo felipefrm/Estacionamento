@@ -1,14 +1,17 @@
 #ifndef ENTRADASAIDA
 #define ENTRADASAIDA
 
+#define CAR 2
+#define TRUCK 3
+
 struct arquivos {
   FILE* manobras;
   FILE* veiculos;
 }; typedef struct arquivos Arquivos;
 
 struct automovel {
-  char id, tamanho, direcao;    // estrutura que especifíca cada veiculo
-  int x, y;
+  char id, direcao;    // estrutura que especifíca cada veiculo
+  int x, y, tamanho;
 }; typedef struct automovel Auto;
 
 struct movimento {

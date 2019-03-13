@@ -11,8 +11,7 @@ int main(int argc, char *argv[]){
   int **mapa = criaMapa();
   Auto *veiculo = leituraConfigInicial(arq->veiculos);
   configInicialMapa(qtdVeiculos, veiculo, mapa);
-  if(leituraExecucaoManobra(veiculo, mapa, arq->manobras))
-    verificaSaidaZ(veiculo, qtdVeiculos);
+  leituraExecucaoManobra(veiculo, mapa, arq->manobras);
   free(arq);
   imprimeMapa(mapa);
 }

@@ -2,7 +2,8 @@
 #ifndef MANOBRAS
 #define MANOBRAS
 
-void verificaSaidaZ(Auto *veiculo, int qtdVeiculos);
+int verificaColisaoParede(int i);
+int verificaSaidaZ(Auto *veiculo, int qtdVeiculos);
 struct timeval contaTempoRelogio();
 void contaTempoProcessador(double *utime, double *stime);
 void apagaPosAnterior(Auto veiculo, int **mapa);
