@@ -2,6 +2,7 @@
 #ifndef MANOBRAS
 #define MANOBRAS
 
+int verificaTrajeto(Auto veiculo, int **mapa, Movimento manobra);
 int verificaColisaoParede(int i);
 int verificaSaidaZ(Auto *veiculo, int qtdVeiculos);
 struct timeval contaTempoRelogio();

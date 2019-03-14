@@ -14,4 +14,5 @@ int main(int argc, char *argv[]){
   leituraExecucaoManobra(veiculo, mapa, arq->manobras);
   free(arq);
   imprimeMapa(mapa);
+
 }

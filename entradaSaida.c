@@ -40,8 +40,9 @@ Arquivos* argumentosEntrada(int argc, char* argv[]){
 int calculaQtdVeiculos(FILE* arq){
   qtdVeiculos = 0;
   while (!feof(arq))
-    if (fgetc(arq) == '\n')    // calcula a quantidade de veiculos
+    if (fgetc(arq) == '\n' || feof(arq))    // calcula a quantidade de veiculos
       qtdVeiculos++;              // por meio da quantidade de '\n'
+  // printf("HOW MANY CARS WE HAVE? %d\n", qtdVeiculos);
   return qtdVeiculos;
 }
 
@@ -110,35 +111,42 @@ Movimento leituraManobra(FILE *arq_manobra){
   return manobra;
 }
 
+void imprimeTempo(double user_time, double system_time, double process_time, double clocktime){
+  printf(" -~-~-~-~-~-~- ESTATÍSTICAS DE TEMPO DE EXECUCAÇÃO -~-~-~-~-~-~-\n");
+  printf("Tempo de usuário: %fs + Tempo de sistema: %fs = %f.\n", user_time, system_time, process_time);
+  printf("Tempo de relogio: %fs\n", clocktime);
+
+}
+
 int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
   double utime_ant, utime_pos, stime_ant, stime_pos;
   struct timeval clocktime_ant, clocktime_pos;
+  int flag;
   clocktime_ant = contaTempoRelogio();
   contaTempoProcessador(&utime_ant, &stime_ant); //marca tempo inicial
   while(!feof(arq_manobras))
-    if(!realizaManobra(qtdVeiculos, veiculo, leituraManobra(arq_manobras), mapa)){
-      clocktime_pos = contaTempoRelogio();
-      contaTempoProcessador(&utime_pos, &stime_pos); //marca tempo final
-      printf("Tempo de usuário: %fs + Tempo de sistema: %fs = %f.\n", utime_pos-utime_ant, stime_pos-stime_ant, (utime_pos-utime_ant) + (stime_pos-stime_ant));
-      printf("Tempo de relogio: %fs\n", ((double)(clocktime_pos.tv_sec-clocktime_ant.tv_sec))
-       + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
-      printf("Manobra inviável.\n");
-      fclose(arq_manobras);
-      free(veiculo);
-      return 0;
-    }
-    clocktime_pos = contaTempoRelogio();
+    flag = realizaManobra(qtdVeiculos, veiculo, leituraManobra(arq_manobras), mapa);
+  clocktime_pos = contaTempoRelogio();
   contaTempoProcessador(&utime_pos, &stime_pos); //marca tempo final
-  printf("Tempo de usuário: %fs + Tempo de sistema: %fs = %f.\n", utime_pos-utime_ant, stime_pos-stime_ant, (utime_pos-utime_ant) + (stime_pos-stime_ant));
-  printf("Tempo de relogio: %fs\n", ((double)(clocktime_pos.tv_sec-clocktime_ant.tv_sec))
-   + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
-  if(!verificaSaidaZ(veiculo, qtdVeiculos)){
-    printf("O veículo Z não chegou até à saída.\n");
+  imprimeTempo(utime_pos-utime_ant, stime_pos-stime_ant, (utime_pos-utime_ant)
+  + (stime_pos-stime_ant), ((double)(clocktime_pos.tv_sec-clocktime_ant.tv_sec))
+  + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
+  if (!flag) {
+    printf("Manobra inviável.\n");
+    fclose(arq_manobras);
+    free(veiculo);
     return 0;
   }
-  printf("O veículo Z chegou até à saída.\n");
-  fclose(arq_manobras);
-  return 1;
+  else {
+    if(!verificaSaidaZ(veiculo, qtdVeiculos)){
+      printf("O veículo Z não chegou até à saída.\n");
+      return 0;
+    }
+    printf("O veículo Z chegou até à saída.\n");
+    fclose(arq_manobras);
+    free(veiculo);
+    return 1;
+  }
 }
 
 void imprimeMapa(int **mapa){

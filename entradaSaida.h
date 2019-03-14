@@ -30,5 +30,7 @@ int verificaSinal(char sinal, int num);
 Movimento leituraManobra(FILE *arq_manobra);
 int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras);
 void imprimeMapa(int **mapa);
+void imprimeTempo(double user_time, double system_time, double process_time, double clocktime);
+
 
 #endif
