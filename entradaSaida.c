@@ -112,10 +112,10 @@ Movimento leituraManobra(FILE *arq_manobra){
 }
 
 void imprimeTempo(double user_time, double system_time, double process_time, double clocktime){
-  printf(" -~-~-~-~-~-~- ESTATÍSTICAS DE TEMPO DE EXECUCAÇÃO -~-~-~-~-~-~-\n");
-  printf("Tempo de usuário: %fs + Tempo de sistema: %fs = %f.\n", user_time, system_time, process_time);
-  printf("Tempo de relogio: %fs\n", clocktime);
-
+  printf(" ~-~-~-~-~-~-~-~-~- ESTATÍSTICAS DE TEMPO DE EXECUÇÃO -~-~-~-~-~-~-~\n");
+  printf("%fs (tempo de usuário) + %fs (tempo de sistema) = %fs (tempo total)\n", user_time, system_time, process_time);
+  printf("%fs (tempo)\n", clocktime);
+  printf("-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
 }
 
 int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
@@ -131,11 +131,17 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
   imprimeTempo(utime_pos-utime_ant, stime_pos-stime_ant, (utime_pos-utime_ant)
   + (stime_pos-stime_ant), ((double)(clocktime_pos.tv_sec-clocktime_ant.tv_sec))
   + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
-  if (!flag) {
-    printf("Manobra inviável.\n");
+  if (flag != 1){
+    if (flag == 0)
+      printf("INCOMPATIBILIDADE DE DADOS... Não há veículo identificado como %c.\n");
+    else if (flag == 2)
+      printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com o muro.\n");
+    else if (flag == 3)
+      printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com um veículo.\n");
     fclose(arq_manobras);
     free(veiculo);
     return 0;
+
   }
   else {
     if(!verificaSaidaZ(veiculo, qtdVeiculos)){
@@ -150,7 +156,8 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
 }
 
 void imprimeMapa(int **mapa){
-  printf("MAPA DO ESTACIONAMENTO:\n");
+  printf("-~-~-~-~-~-~-~-~-~-~-~\n");
+  printf("MAPA DO ESTACIONAMENTO\n");
   for (int i=SIZEMAP-1; i>=0; i--){
     for (int j=0; j<SIZEMAP; j++){
       printf("%d ", mapa[i][j]);
@@ -159,4 +166,5 @@ void imprimeMapa(int **mapa){
     printf("\n");
   }
   free(mapa);
+  printf("-~-~-~-~-~-~-~-~-~-~-~\n");
 }

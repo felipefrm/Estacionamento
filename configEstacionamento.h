@@ -5,6 +5,7 @@
 #define SIZEMAP 6
 
 int** criaMapa();
-void configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa);
+int configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa);
+int verificaEspacoMapa(Auto veiculo, int **mapa);
 
 #endif
