@@ -7,7 +7,7 @@ int** criaMapa(){
   int **mapa = malloc(sizeof(int*)*SIZEMAP);
   for (int i=0; i<SIZEMAP; i++){
     mapa[i] = malloc(sizeof(int)*SIZEMAP);    // formação do estacionamento
-    for (int j=0; j<SIZEMAP; j++)             // atraves de uma matriz
+    for (int j=0; j<SIZEMAP; j++)             // atraves de uma matriz 6x6
       mapa[i][j] = 0;
     }
   return mapa;
@@ -15,24 +15,19 @@ int** criaMapa(){
 
 int verificaEspacoMapa(Auto veiculo, int **mapa){
   if (veiculo.direcao == 'X'){
-    // printf("mapa: %d\n", mapa[veiculo.y-1][veiculo.x-1]);
     if (mapa[veiculo.y-1][veiculo.x-1] == 0 && mapa[veiculo.y-1][veiculo.x] == 0){
       if (veiculo.tamanho == TRUCK && mapa[veiculo.y-1][veiculo.x+1] == 0)
         return 1;
-      if (veiculo.tamanho == CAR){
-        // printf("retornei 1 na primeira interação.\n");
-        return 1;
+      if (veiculo.tamanho == CAR){    // checa se as posições em que estão sendo iseridas
+        return 1;                     // os veiculos estão disponíveis
       }
       return 0;
     }
     return 0;
   }
   else if (veiculo.direcao == 'Y'){
-    // printf("mapa1: %d\n", mapa[veiculo.y-1][veiculo.x-1]);
-    // printf("mapa2: %d\n", mapa[veiculo.y-1][veiculo.x]);
     if (mapa[veiculo.y-1][veiculo.x-1] == 0 && mapa[veiculo.y][veiculo.x-1] == 0){
       if (veiculo.tamanho == TRUCK && mapa[veiculo.y+1][veiculo.x-1] == 0)
-        // printf("ola!");
         return 1;
       if (veiculo.tamanho == CAR)
         return 1;
@@ -46,23 +41,23 @@ int configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
   for(int i=0; i<qtdVeiculos; i++){
 
     if (veiculo[i].direcao == 'X'){
-      if(!verificaEspacoMapa(veiculo[i], mapa))
+      if(!verificaEspacoMapa(veiculo[i], mapa)){
+        printf("Configuração física impossível (dois veículos ocupando a mesma posição inicial).\n");
         return 0;
-      // printf("%d %d\n",veiculo[i].x,veiculo[i].y);
-      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;
+      }
+      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;          // configuração inicial do estacionamento
       mapa[veiculo[i].y-1][veiculo[i].x] = 1;
       if (veiculo[i].tamanho == TRUCK)
         mapa[veiculo[i].y-1][veiculo[i].x+1] = 1;
     }
     else if (veiculo[i].direcao == 'Y'){
-      // printf("fora da func 1: %d\n", mapa[veiculo[i].y-1][veiculo[i].x-1]);
-      // printf("fora da func 2: %d\n", mapa[veiculo[i].y-1][veiculo[i].x]);
 
-      if(!verificaEspacoMapa(veiculo[i], mapa))
+      if(!verificaEspacoMapa(veiculo[i], mapa)){
+        printf("Configuração física impossível (dois veículos ocupando a mesma posição inicial).\n");
         return 0;
-      // printf("%d %d\n",veiculo[i].x,veiculo[i].y);
-      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;  // configuração inicial do mapa
-      mapa[veiculo[i].y][veiculo[i].x-1] = 1;   // ja com os veiculos
+      }
+      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;  
+      mapa[veiculo[i].y][veiculo[i].x-1] = 1;
       if (veiculo[i].tamanho == TRUCK)
         mapa[veiculo[i].y+1][veiculo[i].x-1] = 1;
     }
