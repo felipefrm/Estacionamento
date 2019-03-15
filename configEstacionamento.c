@@ -42,7 +42,8 @@ int configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
 
     if (veiculo[i].direcao == 'X'){
       if(!verificaEspacoMapa(veiculo[i], mapa)){
-        printf("Configuração física impossível (dois veículos ocupando a mesma posição inicial).\n");
+        printf("Configuração física impossível (dois veículos ocupando a mesma "
+          "posição inicial ou um veículo estrapolando o limite do estacionamento).\n");
         return 0;
       }
       mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;          // configuração inicial do estacionamento
@@ -53,10 +54,11 @@ int configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
     else if (veiculo[i].direcao == 'Y'){
 
       if(!verificaEspacoMapa(veiculo[i], mapa)){
-        printf("Configuração física impossível (dois veículos ocupando a mesma posição inicial).\n");
+        printf("Configuração física impossível (dois veículos ocupando a mesma "
+          "posição inicial ou um veículo estrapolando o limite do estacionamento).\n");
         return 0;
       }
-      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;  
+      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;
       mapa[veiculo[i].y][veiculo[i].x-1] = 1;
       if (veiculo[i].tamanho == TRUCK)
         mapa[veiculo[i].y+1][veiculo[i].x-1] = 1;

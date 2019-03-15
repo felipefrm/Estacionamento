@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
-#include <time.h>
-#include <sys/time.h>
 #include "entradaSaida.h"
 #include "manobras.h"
 #include "configEstacionamento.h"
@@ -105,7 +103,7 @@ Movimento leituraManobra(FILE *arq_manobra){
 }
 
 void imprimeTempo(double user_time, double system_time, double process_time, double clocktime){
-  printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~- ESTATÍSTICAS DE TEMPO DE EXECUÇÃO -~-~-~-~-~-~-~-~-~-~-~\n");
+  printf("\n~-~-~-~-~-~-~-~-~-~-~-~-~-~- ESTATÍSTICAS DE TEMPO DE EXECUÇÃO -~-~-~-~-~-~-~-~-~-~-~\n");
   printf("%fs (tempo de usuário) + %fs (tempo de sistema) = %fs (tempo total)\n", user_time, system_time, process_time);
   printf("%fs (tempo de execução)\n", clocktime);
   printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
@@ -113,30 +111,33 @@ void imprimeTempo(double user_time, double system_time, double process_time, dou
 
 int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
 
-  double utime_ant, utime_pos, stime_ant, stime_pos;
-  struct timeval clocktime_ant, clocktime_pos;
+  // double utime_ant, utime_pos, stime_ant, stime_pos;
+  // struct timeval clocktime_ant, clocktime_pos;
   int flag;
 
-  clocktime_ant = contaTempoRelogio(); //marca tempo inicial
-  contaTempoProcessador(&utime_ant, &stime_ant); //marca tempo inicial
+  // contaTempoRelogio(&clocktime_ant); //marca tempo inicial
+  // contaTempoProcessador(&utime_ant, &stime_ant); //marca tempo inicial
 
+  printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
   while(!feof(arq_manobras)){
     if((flag = realizaManobra(qtdVeiculos, veiculo, leituraManobra(arq_manobras), mapa)) != 1)
       break;
   }
-  clocktime_pos = contaTempoRelogio(); //marca tempo final
-  contaTempoProcessador(&utime_pos, &stime_pos); //marca tempo final
-  imprimeTempo(utime_pos-utime_ant, stime_pos-stime_ant, (utime_pos-utime_ant)
-  + (stime_pos-stime_ant), ((double)(clocktime_pos.tv_sec-clocktime_ant.tv_sec))
-  + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
+  // contaTempoRelogio(&clocktime_pos); //marca tempo final
+  // contaTempoProcessador(&utime_pos, &stime_pos); //marca tempo final
+  // imprimeTempo(utime_pos-utime_ant, stime_pos-stime_ant, (utime_pos-utime_ant)
+  // + (stime_pos-stime_ant), ((double)(clocktime_pos.tv_sec-clocktime_ant.tv_sec))
+  // + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
                                     // o retorno da função realizaManobra() é o responsável por avisar
+
+  printf("flag = %d\n", flag);
   if (flag != 1){                   // se houver problemas na execução das manobras
-    if (flag == 0)
-      printf("INCOMPATIBILIDADE DE DADOS... Não há veículo identificado como %c.\n");
-    else if (flag == 2)
+    if (flag == 2)
       printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com o muro.\n");
     else if (flag == 3)
       printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com um veículo.\n");
+    else
+      printf("INCOMPATIBILIDADE DE DADOS... Não há veículo identificado como %c.\n", flag);
     fclose(arq_manobras);
     free(veiculo);
     return 0;
@@ -155,8 +156,7 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
 }
 
 void imprimeMapa(int **mapa){
-  printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
-  printf("MAPA DO ESTACIONAMENTO\n");
+  printf("\nMAPA DO ESTACIONAMENTO\n");
   for (int i=SIZEMAP-1; i>=0; i--){
     for (int j=0; j<SIZEMAP; j++){
       printf("%d ", mapa[i][j]);

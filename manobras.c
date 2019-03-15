@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <time.h>
 #include "manobras.h"
 #include "entradaSaida.h"
 
@@ -167,10 +168,8 @@ void contaTempoProcessador(double *utime, double *stime){
   *stime = (double) resources.ru_stime.tv_sec + 1.e-6 * (double) resources.ru_stime.tv_usec;
 }
 
-struct timeval contaTempoRelogio(){
-  struct timeval tempo;
-  gettimeofday(&tempo, NULL);
-  return tempo;
+void contaTempoRelogio(struct timeval *tempo){
+  gettimeofday(&(*tempo), NULL);
 }
 
 void apagaPosAnterior(Auto veiculo, int **mapa){
@@ -226,10 +225,15 @@ int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra){
 }
 
 int realizaManobra(int qtdVeiculos, Auto *veiculo, Movimento manobra, int **mapa){
+  // printf("aq eu entro\n");
   int flag = 0;
+  // printf("aq tbm\n");
   for (int i=0; i<qtdVeiculos; i++){
     if (veiculo[i].id == manobra.id){
+      // printf("manobra: %c\n", manobra.id);
+      // printf("manobra: %c ////veiculo: %c\n", manobra.id, veiculo[i].id);
       flag = verificaTrajeto(veiculo[i], mapa, manobra);
+      printf("flag: %d\n", flag);
       if (flag == 2 || flag == 3){
         return flag;
       }
@@ -237,5 +241,6 @@ int realizaManobra(int qtdVeiculos, Auto *veiculo, Movimento manobra, int **mapa
       return movimentaVeiculo(&veiculo[i], mapa, manobra);
     }
   }
-  return 1;
-}
+  return manobra.id; // se chegar até aqui é porque não existe nenhum veiculo com o id igual ao da manobra.
+}                    // retorna-se o id para poder ser especificado na mensagem de erro qual é a manobra
+                     // que está causando o conflito
