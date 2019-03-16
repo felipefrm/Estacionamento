@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "entradaSaida.h"
 #include "manobras.h"
 #include "configEstacionamento.h"
+
 
 Arquivos* argumentosEntrada(int argc, char* argv[]){
 
@@ -35,6 +38,7 @@ Arquivos* argumentosEntrada(int argc, char* argv[]){
   return arq;
 }
 
+
 int calculaQtdVeiculos(FILE* arq_veiculos){
   qtdVeiculos = 0;
   while (!feof(arq_veiculos))
@@ -43,9 +47,11 @@ int calculaQtdVeiculos(FILE* arq_veiculos){
   return qtdVeiculos;
 }
 
+
 int convertCharToInt(char num){     // conversão de char para inteiro
   return (num -48);
 }
+
 
 void setVeiculo(int qtdVeiculos, FILE *arq_veiculos, Auto *veiculo){
   char c;
@@ -68,6 +74,7 @@ void setVeiculo(int qtdVeiculos, FILE *arq_veiculos, Auto *veiculo){
   }
 }
 
+
 Auto* leituraConfigInicial(FILE* arq_veiculos){
   int qtdVeiculos = calculaQtdVeiculos(arq_veiculos);
   Auto *veiculo = malloc(sizeof(Auto)*qtdVeiculos);  // aloca memoria para cada veiculo
@@ -77,6 +84,7 @@ Auto* leituraConfigInicial(FILE* arq_veiculos){
   return veiculo;
 }
 
+
 int verificaSinal(char sinal, int num){   // recebe o sinal matematico no tipo char
   if (sinal == '-')                       // e um número e retorna este número com
     return -num;                          // seu respectivo sinal
@@ -84,11 +92,12 @@ int verificaSinal(char sinal, int num){   // recebe o sinal matematico no tipo c
     return num;
 }
 
-Movimento leituraManobra(FILE *arq_manobra){
+
+Movimento leituraManobra(FILE *arq_manobras){
 
   Movimento manobra; char c;
   manobra.sinal = '+';
-  for(int i=0; (c = fgetc(arq_manobra)) != '\n' && !feof(arq_manobra); i++){  //armazena as configurações
+  for(int i=0; (c = fgetc(arq_manobras)) != '\n' && !feof(arq_manobras); i++){  //armazena as configurações
     if (i == 0)                                                               //de manobra de apenas uma linha
       manobra.id = c;
     else if (i == 2)
@@ -98,39 +107,33 @@ Movimento leituraManobra(FILE *arq_manobra){
     else if ((i == 4 && c != '+' && c != '-') || i == 5)
       manobra.amplitude = verificaSinal(manobra.sinal, convertCharToInt(c));
   }
-  fscanf(arq_manobra, "\n");
+  fscanf(arq_manobras, "\n");
   return manobra;
 }
 
-void imprimeTempo(double user_time, double system_time, double process_time, double clocktime){
-  printf("\n~-~-~-~-~-~-~-~-~-~-~-~-~-~- ESTATÍSTICAS DE TEMPO DE EXECUÇÃO -~-~-~-~-~-~-~-~-~-~-~\n");
-  printf("%fs (tempo de usuário) + %fs (tempo de sistema) = %fs (tempo total)\n", user_time, system_time, process_time);
-  printf("%fs (tempo de execução)\n", clocktime);
-  printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
+
+int verificaArqVazio(FILE* arq, Auto *veiculo){
+  int tamanho_arq;
+  fseek (arq, 0, SEEK_END);               // aponta para o fim do arquivo com fseek()
+  if((tamanho_arq = ftell (arq)) == 0){   // retorna o valor da posição do ponteiro com ftell()
+    printf("O arquivo de manobras está vazio!\n");
+    return 0;
+  }
+  rewind(arq);   // retorna o ponteiro para o inicio do arquivo, para os proximos
+  return 1;      // procedimentos
 }
+
 
 int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
 
-  // double utime_ant, utime_pos, stime_ant, stime_pos;
-  // struct timeval clocktime_ant, clocktime_pos;
   int flag;
-
-  // contaTempoRelogio(&clocktime_ant); //marca tempo inicial
-  // contaTempoProcessador(&utime_ant, &stime_ant); //marca tempo inicial
-
   printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
   while(!feof(arq_manobras)){
     if((flag = realizaManobra(qtdVeiculos, veiculo, leituraManobra(arq_manobras), mapa)) != 1)
       break;
   }
-  // contaTempoRelogio(&clocktime_pos); //marca tempo final
-  // contaTempoProcessador(&utime_pos, &stime_pos); //marca tempo final
-  // imprimeTempo(utime_pos-utime_ant, stime_pos-stime_ant, (utime_pos-utime_ant)
-  // + (stime_pos-stime_ant), ((double)(clocktime_pos.tv_sec-clocktime_ant.tv_sec))
-  // + ((double)(clocktime_pos.tv_usec-clocktime_ant.tv_usec)/1000000));
+  fclose(arq_manobras);
                                     // o retorno da função realizaManobra() é o responsável por avisar
-
-  printf("flag = %d\n", flag);
   if (flag != 1){                   // se houver problemas na execução das manobras
     if (flag == 2)
       printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com o muro.\n");
@@ -138,7 +141,7 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
       printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com um veículo.\n");
     else
       printf("INCOMPATIBILIDADE DE DADOS... Não há veículo identificado como %c.\n", flag);
-    fclose(arq_manobras);
+
     free(veiculo);
     return 0;
 
@@ -146,14 +149,15 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
   else {
     if(!verificaSaidaZ(veiculo, qtdVeiculos)){            // verifica se o veiculo chegou
       printf("O veículo Z não chegou até à saída.\n");    // até a saída do estacionamento
+      free(veiculo);
       return 0;
     }
     printf("O veículo Z chegou até à saída.\n");
-    fclose(arq_manobras);
     free(veiculo);
     return 1;
   }
 }
+
 
 void imprimeMapa(int **mapa){
   printf("\nMAPA DO ESTACIONAMENTO\n");
@@ -166,4 +170,42 @@ void imprimeMapa(int **mapa){
   }
   free(mapa);
   printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
+}
+
+
+void contaTempo(double *usertime, double *systemtime, struct timeval *timeofday){
+ contaTempoRelogio(&(*timeofday));
+ contaTempoProcessador(&(*usertime), &(*systemtime));
+}
+
+
+void contaTempoProcessador(double *utime, double *stime){
+ struct rusage resources;
+ getrusage(RUSAGE_SELF, &resources);
+ *utime = (double) resources.ru_utime.tv_sec + 1.e-6 * (double) resources.ru_utime.tv_usec;
+ *stime = (double) resources.ru_stime.tv_sec + 1.e-6 * (double) resources.ru_stime.tv_usec;
+}
+
+
+void contaTempoRelogio(struct timeval *tempo){
+ gettimeofday(&(*tempo), NULL);
+}
+
+
+void imprimeTempo(double user_time, double system_time, double clocktime){
+  printf("\n~-~-~-~-~-~-~-~-~-~-~-~-~-~- ESTATÍSTICAS DE TEMPO DE EXECUÇÃO -~-~-~-~-~-~-~-~-~-~-~\n");
+  printf("%fs (tempo de usuário) + %fs (tempo de sistema) = %fs (tempo total)\n", user_time, system_time, user_time+system_time);
+  printf("%fs (tempo de execução)\n", clocktime);
+  printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
+}
+
+
+void liberaPonteiros(Auto *veiculo, Arquivos *arq, int **mapa){
+  free(veiculo);
+  fclose(arq->manobras);
+  fclose(arq->veiculos);
+  free(arq);
+  for (int i=0; i<SIZEMAP; i++)
+    free(mapa[i]);
+  free(mapa);
 }

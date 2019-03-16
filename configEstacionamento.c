@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "configEstacionamento.h"
-#include "entradaSaida.h"
+
 
 int** criaMapa(){
   int **mapa = malloc(sizeof(int*)*SIZEMAP);
@@ -12,6 +12,7 @@ int** criaMapa(){
     }
   return mapa;
 }
+
 
 int verificaEspacoMapa(Auto veiculo, int **mapa){
   if (veiculo.direcao == 'X'){
@@ -36,6 +37,7 @@ int verificaEspacoMapa(Auto veiculo, int **mapa){
     return 0;
   }
 }
+
 
 int configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
   for(int i=0; i<qtdVeiculos; i++){

@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <time.h>
 #include "manobras.h"
-#include "entradaSaida.h"
-
+#include "configEstacionamento.h"
 
 int verificaTrajeto(Auto veiculo, int **mapa, Movimento manobra){
+
+  if(manobra.amplitude == 0)
+    return 1;
 
   int inicio, final;
   if( veiculo.direcao == manobra.direcao){          //Se as direções forem iguais, verifica se o
@@ -33,7 +32,7 @@ int verificaTrajeto(Auto veiculo, int **mapa, Movimento manobra){
       }
       verificaInicioeFinal(&inicio,&final);
 
-      if(!verificaColisaoParede(final))  // Se a manobra tentar avançar além da parede, retorna 2
+      if(!verificaColisaoParede(final) || !verificaColisaoParede(inicio))  // Se a manobra tentar avançar além da parede, retorna 2
         return 2;
 
       if(!verificaLinhaLivre(veiculo, veiculo.direcao, inicio, final, mapa)) // Se houver algo no trajeto linear, retorna 3
@@ -49,7 +48,7 @@ int verificaTrajeto(Auto veiculo, int **mapa, Movimento manobra){
 
       verificaInicioeFinal(&inicio, &final);
 
-      if(!verificaColisaoParede(final))
+      if(!verificaColisaoParede(final) || !verificaColisaoParede(inicio))
         return 2;
 
       int frente = veiculo.x-1 + veiculo.tamanho-1,
@@ -66,20 +65,20 @@ int verificaTrajeto(Auto veiculo, int **mapa, Movimento manobra){
         inicio = veiculo.x;
       final = veiculo.x-1 + manobra.amplitude;
 
-      if(!verificaColisaoParede(final))
+      if(!verificaColisaoParede(final) || !verificaColisaoParede(inicio))
         return 2;
 
       verificaInicioeFinal(&inicio, &final);
 
       int frente = veiculo.y-1+veiculo.tamanho-1,
           traseira = veiculo.y-1;
-
       if(!verificaMatrizLivre(veiculo, inicio, final, traseira, frente, mapa))
         return 3;
     }
   }
   return 1;
 }
+
 
 int verificaInicioeFinal(int *inicio, int *final){
   int aux;
@@ -90,6 +89,7 @@ int verificaInicioeFinal(int *inicio, int *final){
   }
   return 1;
 }
+
 
 int verificaLinhaLivre(Auto veiculo, char direcao, int inicio, int final, int** mapa){
   if(direcao == 'X'){
@@ -105,6 +105,7 @@ int verificaLinhaLivre(Auto veiculo, char direcao, int inicio, int final, int** 
     }
   }
 }
+
 
 int verificaMatrizLivre(Auto veiculo, int inicio, int final, int traseira, int frente, int** mapa){
   if(veiculo.direcao == 'X'){
@@ -127,11 +128,12 @@ int verificaMatrizLivre(Auto veiculo, int inicio, int final, int traseira, int f
 
 
 int verificaColisaoParede(int i){
-  if (i > 5 || i < 0)
+  if (i > SIZEMAP-1 || i < 0)
     return 0;
   else
     return 1;
 }
+
 
 int verificaSaidaZ(Auto *veiculo, int qtdVeiculos){
   for (int i=0; i<qtdVeiculos; i++){
@@ -161,16 +163,6 @@ int verificaSaidaZ(Auto *veiculo, int qtdVeiculos){
   return 0;
 }
 
-void contaTempoProcessador(double *utime, double *stime){
-  struct rusage resources;
-  getrusage(RUSAGE_SELF, &resources);
-  *utime = (double) resources.ru_utime.tv_sec + 1.e-6 * (double) resources.ru_utime.tv_usec;
-  *stime = (double) resources.ru_stime.tv_sec + 1.e-6 * (double) resources.ru_stime.tv_usec;
-}
-
-void contaTempoRelogio(struct timeval *tempo){
-  gettimeofday(&(*tempo), NULL);
-}
 
 void apagaPosAnterior(Auto veiculo, int **mapa){
   if (veiculo.direcao == 'X'){
@@ -186,6 +178,7 @@ void apagaPosAnterior(Auto veiculo, int **mapa){
       mapa[veiculo.y+1][veiculo.x-1] = 0;
   }
 }
+
 
 int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra){
   if (manobra.direcao == 'X'){
@@ -224,16 +217,12 @@ int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra){
   return 1;
 }
 
+
 int realizaManobra(int qtdVeiculos, Auto *veiculo, Movimento manobra, int **mapa){
-  // printf("aq eu entro\n");
   int flag = 0;
-  // printf("aq tbm\n");
   for (int i=0; i<qtdVeiculos; i++){
     if (veiculo[i].id == manobra.id){
-      // printf("manobra: %c\n", manobra.id);
-      // printf("manobra: %c ////veiculo: %c\n", manobra.id, veiculo[i].id);
       flag = verificaTrajeto(veiculo[i], mapa, manobra);
-      printf("flag: %d\n", flag);
       if (flag == 2 || flag == 3){
         return flag;
       }
