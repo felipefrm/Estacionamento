@@ -33,10 +33,10 @@ int verificaTrajeto(Auto veiculo, int **mapa, Movimento manobra){
       verificaInicioeFinal(&inicio,&final);
 
       if(!verificaColisaoParede(final) || !verificaColisaoParede(inicio))  // Se a manobra tentar avançar além da parede, retorna 2
-        return 2;
+        return WALL_COLLISION;
 
       if(!verificaLinhaLivre(veiculo, veiculo.direcao, inicio, final, mapa)) // Se houver algo no trajeto linear, retorna 3
-        return 3;
+        return CAR_COLLISION;
   }
   else {
     if(veiculo.direcao == 'X'){   //Se a direção do veiculo for X, a da manobra será Y
@@ -49,13 +49,13 @@ int verificaTrajeto(Auto veiculo, int **mapa, Movimento manobra){
       verificaInicioeFinal(&inicio, &final);
 
       if(!verificaColisaoParede(final) || !verificaColisaoParede(inicio))
-        return 2;
+        return WALL_COLLISION;
 
       int frente = veiculo.x-1 + veiculo.tamanho-1,
           traseira = veiculo.x-1;
 
       if(!verificaMatrizLivre(veiculo, inicio, final, traseira, frente, mapa))
-        return 3;
+        return CAR_COLLISION;
 
     }
     else if (veiculo.direcao == 'Y'){
@@ -66,14 +66,14 @@ int verificaTrajeto(Auto veiculo, int **mapa, Movimento manobra){
       final = veiculo.x-1 + manobra.amplitude;
 
       if(!verificaColisaoParede(final) || !verificaColisaoParede(inicio))
-        return 2;
+        return WALL_COLLISION;
 
       verificaInicioeFinal(&inicio, &final);
 
       int frente = veiculo.y-1+veiculo.tamanho-1,
           traseira = veiculo.y-1;
       if(!verificaMatrizLivre(veiculo, inicio, final, traseira, frente, mapa))
-        return 3;
+        return CAR_COLLISION;
     }
   }
   return 1;
@@ -192,10 +192,10 @@ int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra){
   if (veiculo->direcao == 'Y'){
     for (int i = veiculo->y-1; i < veiculo->y-1+veiculo->tamanho; i++){
       if(!verificaColisaoParede(i)){
-        return 2;   // retorna 2 se bater for bater no muro
+        return WALL_COLLISION;   // retorna 2 se bater for bater no muro
       }
       if (mapa[i][veiculo->x-1]!= 0){
-        return 3;     //retorna 3 se for bater em outro veiculo
+        return CAR_COLLISION;     //retorna 3 se for bater em outro veiculo
       }                                             //verifica se a posição do veiculo
                                                     //depois da manobra está livre
       else                                          //se estiver, coloca a parte do veiculo no lugar
@@ -205,10 +205,10 @@ int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra){
   else if (veiculo->direcao == 'X'){
     for (int i = veiculo->x-1; i < veiculo->x-1+veiculo->tamanho; i++){
       if(!verificaColisaoParede(i)){
-        return 2;
+        return WALL_COLLISION;
       }
       if (mapa[veiculo->y-1][i]!= 0){
-        return 3;
+        return CAR_COLLISION;
     }
       else if (mapa[veiculo->y-1][i] == 0)
         mapa[veiculo->y-1][i] = 1;
@@ -219,10 +219,9 @@ int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra){
 
 
 int realizaManobra(int qtdVeiculos, Auto *veiculo, Movimento manobra, int **mapa){
-  int flag = 0;
   for (int i=0; i<qtdVeiculos; i++){
     if (veiculo[i].id == manobra.id){
-      flag = verificaTrajeto(veiculo[i], mapa, manobra);
+      int flag = verificaTrajeto(veiculo[i], mapa, manobra);
       if (flag == 2 || flag == 3){
         return flag;
       }

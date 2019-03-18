@@ -19,9 +19,8 @@ int verificaEspacoMapa(Auto veiculo, int **mapa){
     if (mapa[veiculo.y-1][veiculo.x-1] == 0 && mapa[veiculo.y-1][veiculo.x] == 0){
       if (veiculo.tamanho == TRUCK && mapa[veiculo.y-1][veiculo.x+1] == 0)
         return 1;
-      if (veiculo.tamanho == CAR){    // checa se as posições em que estão sendo iseridas
+      else if (veiculo.tamanho == CAR)    // checa se as posições em que estão sendo iseridas
         return 1;                     // os veiculos estão disponíveis
-      }
       return 0;
     }
     return 0;
@@ -30,7 +29,7 @@ int verificaEspacoMapa(Auto veiculo, int **mapa){
     if (mapa[veiculo.y-1][veiculo.x-1] == 0 && mapa[veiculo.y][veiculo.x-1] == 0){
       if (veiculo.tamanho == TRUCK && mapa[veiculo.y+1][veiculo.x-1] == 0)
         return 1;
-      if (veiculo.tamanho == CAR)
+      else if (veiculo.tamanho == CAR)
         return 1;
       return 0;
     }
@@ -41,7 +40,6 @@ int verificaEspacoMapa(Auto veiculo, int **mapa){
 
 int configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
   for(int i=0; i<qtdVeiculos; i++){
-
     if (veiculo[i].direcao == 'X'){
       if(!verificaEspacoMapa(veiculo[i], mapa)){
         printf("Configuração física impossível (dois veículos ocupando a mesma "

@@ -2,6 +2,8 @@
 #ifndef MANOBRAS
 #define MANOBRAS
 
+#define CAR_COLLISION 3
+#define WALL_COLLISION 2
 
 void apagaPosAnterior(Auto veiculo, int **mapa);
 int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra);

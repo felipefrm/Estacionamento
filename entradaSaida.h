@@ -42,8 +42,8 @@ int convertCharToInt(char num);
 
 //funções de análise de tempo
 void contaTempo(double *usertime, double *systemtime, struct timeval *timeofday);
-void contaTempoRelogio(struct timeval *tempo);
+void contaTempoExecucao(struct timeval *tempo);
 void contaTempoProcessador(double *utime, double *stime);
-void imprimeTempo(double user_time, double system_time, double clocktime);
+void imprimeTempo(double user_time, double system_time, double runtime);
 
 #endif

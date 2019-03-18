@@ -135,9 +135,9 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
   fclose(arq_manobras);
                                     // o retorno da função realizaManobra() é o responsável por avisar
   if (flag != 1){                   // se houver problemas na execução das manobras
-    if (flag == 2)
+    if (flag == WALL_COLLISION)
       printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com o muro.\n");
-    else if (flag == 3)
+    else if (flag == CAR_COLLISION)
       printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com um veículo.\n");
     else
       printf("INCOMPATIBILIDADE DE DADOS... Não há veículo identificado como %c.\n", flag);
@@ -159,22 +159,8 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
 }
 
 
-void imprimeMapa(int **mapa){
-  printf("\nMAPA DO ESTACIONAMENTO\n");
-  for (int i=SIZEMAP-1; i>=0; i--){
-    for (int j=0; j<SIZEMAP; j++){
-      printf("%d ", mapa[i][j]);
-    }
-    free(mapa[i]);
-    printf("\n");
-  }
-  free(mapa);
-  printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
-}
-
-
 void contaTempo(double *usertime, double *systemtime, struct timeval *timeofday){
- contaTempoRelogio(&(*timeofday));
+ contaTempoExecucao(&(*timeofday));
  contaTempoProcessador(&(*usertime), &(*systemtime));
 }
 
@@ -187,15 +173,29 @@ void contaTempoProcessador(double *utime, double *stime){
 }
 
 
-void contaTempoRelogio(struct timeval *tempo){
+void contaTempoExecucao(struct timeval *tempo){
  gettimeofday(&(*tempo), NULL);
 }
 
 
-void imprimeTempo(double user_time, double system_time, double clocktime){
+void imprimeTempo(double user_time, double system_time, double runtime){
   printf("\n~-~-~-~-~-~-~-~-~-~-~-~-~-~- ESTATÍSTICAS DE TEMPO DE EXECUÇÃO -~-~-~-~-~-~-~-~-~-~-~\n");
   printf("%fs (tempo de usuário) + %fs (tempo de sistema) = %fs (tempo total)\n", user_time, system_time, user_time+system_time);
-  printf("%fs (tempo de execução)\n", clocktime);
+  printf("%fs (tempo de execução)\n", runtime);
+  printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
+}
+
+
+void imprimeMapa(int **mapa){
+  printf("\nMAPA DO ESTACIONAMENTO\n");
+  for (int i=SIZEMAP-1; i>=0; i--){
+    for (int j=0; j<SIZEMAP; j++){
+      printf("%d ", mapa[i][j]);
+    }
+    free(mapa[i]);
+    printf("\n");
+  }
+  free(mapa);
   printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
 }
 
