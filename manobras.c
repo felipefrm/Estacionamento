@@ -3,6 +3,23 @@
 #include "manobras.h"
 #include "configEstacionamento.h"
 
+
+int realizaManobra(int qtdVeiculos, Auto *veiculo, Movimento manobra, int **mapa){
+  for (int i=0; i<qtdVeiculos; i++){
+    if (veiculo[i].id == manobra.id){
+      int flag = verificaTrajeto(veiculo[i], mapa, manobra);
+      if (flag == 2 || flag == 3){
+        return flag;
+      }
+      apagaPosAnterior(veiculo[i], mapa);
+      return movimentaVeiculo(&veiculo[i], mapa, manobra);
+    }
+  }
+  return manobra.id; // se chegar até aqui é porque não existe nenhum veiculo com o id igual ao da manobra.
+}                    // retorna-se o id para poder ser especificado na mensagem de erro qual é a manobra
+                     // que está causando o conflito
+
+
 int verificaTrajeto(Auto veiculo, int **mapa, Movimento manobra){
 
   if(manobra.amplitude == 0)
@@ -216,19 +233,3 @@ int movimentaVeiculo(Auto *veiculo, int **mapa, Movimento manobra){
   }
   return 1;
 }
-
-
-int realizaManobra(int qtdVeiculos, Auto *veiculo, Movimento manobra, int **mapa){
-  for (int i=0; i<qtdVeiculos; i++){
-    if (veiculo[i].id == manobra.id){
-      int flag = verificaTrajeto(veiculo[i], mapa, manobra);
-      if (flag == 2 || flag == 3){
-        return flag;
-      }
-      apagaPosAnterior(veiculo[i], mapa);
-      return movimentaVeiculo(&veiculo[i], mapa, manobra);
-    }
-  }
-  return manobra.id; // se chegar até aqui é porque não existe nenhum veiculo com o id igual ao da manobra.
-}                    // retorna-se o id para poder ser especificado na mensagem de erro qual é a manobra
-                     // que está causando o conflito

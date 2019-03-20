@@ -40,15 +40,16 @@ int verificaEspacoMapa(Auto veiculo, int **mapa){
 
 int configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
   for(int i=0; i<qtdVeiculos; i++){
+    // printf("Direcao: %c\n", veiculo[i].direcao);
     if (veiculo[i].direcao == 'X'){
       if(!verificaEspacoMapa(veiculo[i], mapa)){
         printf("Configuração física impossível (dois veículos ocupando a mesma "
           "posição inicial ou um veículo estrapolando o limite do estacionamento).\n");
         return 0;
       }
-      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;          // configuração inicial do estacionamento
+      mapa[veiculo[i].y-1][veiculo[i].x-1] = 1;
       mapa[veiculo[i].y-1][veiculo[i].x] = 1;
-      if (veiculo[i].tamanho == TRUCK)
+      if (veiculo[i].tamanho == TRUCK)         // configuração inicial do estacionamento
         mapa[veiculo[i].y-1][veiculo[i].x+1] = 1;
     }
     else if (veiculo[i].direcao == 'Y'){
@@ -62,6 +63,10 @@ int configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
       mapa[veiculo[i].y][veiculo[i].x-1] = 1;
       if (veiculo[i].tamanho == TRUCK)
         mapa[veiculo[i].y+1][veiculo[i].x-1] = 1;
+    }
+    else if (veiculo[i].id != 0 && veiculo[i].direcao != 'Y' && veiculo[i].direcao != 'X') {
+      printf("Entende-se por direção apenas o eixo X e Y.\n");
+      return 0;
     }
   }
   return 1;

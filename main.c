@@ -9,8 +9,12 @@ int main(int argc, char *argv[]){
 
   double utime_ant, utime_pos, stime_ant, stime_pos;
   struct timeval runtime_ant, runtime_pos;
-  contaTempo(&utime_ant, &stime_ant, &runtime_ant);
+  contaTempoProcessador(&utime_ant, &stime_ant);
   Arquivos* arq = argumentosEntrada(argc, argv);
+  if (!arq->flag){      // se a flag for 0, é porque houve erro na abertura dos arquivo
+    free(arq);          // ou então o ./tp foi executado com falta de argumentos
+    return 1;
+  }
   int **mapa = criaMapa();
   Auto *veiculo = leituraConfigInicial(arq->veiculos);
   if(!(configInicialMapa(qtdVeiculos, veiculo, mapa) && verificaArqVazio(arq->manobras, veiculo))){
@@ -19,9 +23,8 @@ int main(int argc, char *argv[]){
   }
   leituraExecucaoManobra(veiculo, mapa, arq->manobras);
   free(arq);
-  contaTempo(&utime_pos, &stime_pos, &runtime_pos);
-  imprimeTempo(utime_pos-utime_ant, stime_pos-stime_ant, ((double)(runtime_pos.tv_sec
-   -runtime_ant.tv_sec)) + ((double)(runtime_pos.tv_usec-runtime_ant.tv_usec)/1000000));
+  contaTempoProcessador(&utime_pos, &stime_pos);
+  imprimeTempo(utime_pos-utime_ant, stime_pos-stime_ant);
   imprimeMapa(mapa);
   return 0;
 }

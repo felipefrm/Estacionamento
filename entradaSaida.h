@@ -8,6 +8,7 @@
 struct arquivos {
   FILE* manobras;     // estrutura que receberá o ponteiro dos arquivos
   FILE* veiculos;     // de veiculos e manobras
+  int flag;   // flag para pode retornar 0 ou 1
 }; typedef struct arquivos Arquivos;
 
 
@@ -41,9 +42,8 @@ int verificaSinal(char sinal, int num);
 int convertCharToInt(char num);
 
 //funções de análise de tempo
-void contaTempo(double *usertime, double *systemtime, struct timeval *timeofday);
-void contaTempoExecucao(struct timeval *tempo);
+void contaTempo(double *usertime, double *systemtime);
 void contaTempoProcessador(double *utime, double *stime);
-void imprimeTempo(double user_time, double system_time, double runtime);
+void imprimeTempo(double user_time, double system_time);
 
 #endif
