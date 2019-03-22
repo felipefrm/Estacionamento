@@ -1,2 +1,1 @@
-Z 2 X X2Y4
-A 3 Y X6Y3
+Z 2 Y X1Y1
