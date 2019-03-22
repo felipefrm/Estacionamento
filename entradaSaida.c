@@ -77,7 +77,6 @@ Auto* leituraConfigInicial(FILE* arq_veiculos){
   Auto *veiculo = malloc(sizeof(Auto)*qtdVeiculos);  // aloca memoria para cada veiculo
   rewind(arq_veiculos);         // seta o ponteiro do arquivo para o inicio do mesmo
   setVeiculo(qtdVeiculos, arq_veiculos, veiculo);
-  fclose(arq_veiculos);
   return veiculo;
 }
 
@@ -109,8 +108,7 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
     if((flag = realizaManobra(qtdVeiculos, veiculo, leituraManobra(arq_manobras), mapa)) != 1)
     break;
   }
-  fclose(arq_manobras);
-  // o retorno da função realizaManobra() é o responsável por avisar
+                  // o retorno da função realizaManobra() é o responsável por avisar
   if (flag != 1){                   // se houver problemas na execução das manobras
     if (flag == WALL_COLLISION)
     printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com o muro.\n");
@@ -118,19 +116,15 @@ int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras){
     printf("Conjunto de manobras inviável!\nMOTIVO: Colisão com um veículo.\n");
     else
     printf("INCOMPATIBILIDADE DE DADOS... Não há veículo identificado como %c.\n", flag);
-
-    free(veiculo);
     return 0;
-
   }
+
   else {
     if(!verificaSaidaZ(veiculo, qtdVeiculos)){                              // verifica se o veiculo chegou
       printf("O veículo Z não obteve sucesso em chegar até à saída.\n");    // até a saída do estacionamento
-      free(veiculo);
       return 0;
     }
     printf("O veículo Z obteve sucesso em chegar até à saída.\n");
-    free(veiculo);
     return 1;
   }
 }
@@ -142,15 +136,13 @@ void imprimeMapa(int **mapa){
     for (int j=0; j<SIZEMAP; j++){
       printf("%d ", mapa[i][j]);
     }
-    free(mapa[i]);
     printf("\n");
   }
-  free(mapa);
   printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
 }
 
 
-int verificaArqVazio(FILE* arq, Auto *veiculo){
+int verificaArqVazio(FILE* arq){
   int tamanho_arq;
   fseek (arq, 0, SEEK_END);               // aponta para o fim do arquivo com fseek()
   if((tamanho_arq = ftell (arq)) == 0){   // retorna o valor da posição do ponteiro com ftell()
@@ -195,7 +187,6 @@ void contaTempoProcessador(double *utime, double *stime){
 
 
 void imprimeTempo(double user_time, double system_time){
-  // printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~- ESTATÍSTICAS DE TEMPO DE EXECUÇÃO -~-~-~-~-~-~-~-~-~-~-~\n");
   printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");
   printf("%fs (tempo de usuário) + %fs (tempo de sistema) = %fs (tempo total)\n", user_time, system_time, user_time+system_time);
   printf("~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~\n");

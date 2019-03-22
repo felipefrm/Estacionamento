@@ -34,7 +34,7 @@ Auto* leituraConfigInicial(FILE* arq_veiculos);
 Movimento leituraManobra(FILE *arq_manobra);
 int leituraExecucaoManobra(Auto *veiculo, int **mapa, FILE* arq_manobras);
 void imprimeMapa(int **mapa);
-int verificaArqVazio(FILE* arq, Auto *veiculo);
+int verificaArqVazio(FILE* arq);
 void liberaPonteiros(Auto *veiculo, Arquivos *arq, int **mapa);
 
 //funções auxiliares

@@ -40,7 +40,6 @@ int verificaEspacoMapa(Auto veiculo, int **mapa){
 
 int configInicialMapa(int qtdVeiculos, Auto* veiculo, int **mapa){
   for(int i=0; i<qtdVeiculos; i++){
-    // printf("Direcao: %c\n", veiculo[i].direcao);
     if (veiculo[i].direcao == 'X'){
       if(!verificaEspacoMapa(veiculo[i], mapa)){
         printf("Configuração física impossível (dois veículos ocupando a mesma "
