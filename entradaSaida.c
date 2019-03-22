@@ -155,10 +155,10 @@ int verificaArqVazio(FILE* arq){
 
 
 void liberaPonteiros(Auto *veiculo, Arquivos *arq, int **mapa){
-  free(veiculo);
   fclose(arq->manobras);
   fclose(arq->veiculos);
   free(arq);
+  free(veiculo);
   for (int i=0; i<SIZEMAP; i++)
     free(mapa[i]);
   free(mapa);
